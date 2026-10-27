@@ -58,6 +58,6 @@ module.exports = {
     cookieName: isProd ? "__Host-bh_chat" : "bh_chat",
     maxMessageLength: 1000,
     maxAiRepliesPerConversation: 40,
-    historyForAi: 16
+    historyForAi: 80
   }
 };

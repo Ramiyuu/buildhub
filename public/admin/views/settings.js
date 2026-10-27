@@ -17,8 +17,8 @@ export default async function render(root, ctx) {
     <div class="stack">
       <div class="card"><div class="card-head"><div><h2>Conexão com a OpenAI</h2></div></div><dl class="kv"><dt>Status</dt><dd>${keyBadge}</dd><dt>Modelo</dt><dd>${model}</dd></dl><p class="muted small mt">A chave fica só nas variáveis do servidor (OPENAI_API_KEY) e nunca é enviada ao navegador. O modelo pode ser trocado em OPENAI_MODEL.</p></div>
       <div class="card"><div class="card-head"><div><h2>Como funciona</h2></div></div><ul class="protection-list">
-        <li>${icon("check")}<span>O visitante conversa com a IA a qualquer hora.</span></li>
-        <li>${icon("check")}<span>Se ele pedir um atendente (ou a IA achar necessário), você recebe uma notificação com som no sino.</span></li>
+        <li>${icon("check")}<span>O visitante pode iniciar uma conversa a qualquer hora; o retorno humano depende da disponibilidade da equipe.</span></li>
+        <li>${icon("check")}<span>Pedidos de orçamento ou atendente geram uma notificação no painel e pausam a IA até a equipe assumir. O resumo fica na notificação.</span></li>
         <li>${icon("check")}<span>Ao <b>assumir</b> a conversa ou responder, a IA para imediatamente nela.</span></li>
         <li>${icon("check")}<span><b>Devolver à IA</b> reativa o atendimento automático.</span></li>
         <li>${icon("check")}<span>Limites: 1.000 caracteres por mensagem, 14 mensagens/min por IP e 40 respostas de IA por conversa.</span></li>

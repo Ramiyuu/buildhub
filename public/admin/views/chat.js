@@ -5,7 +5,7 @@ const clock = (iso) => new Date(iso).toLocaleTimeString("pt-BR", { hour: "2-digi
 
 function modeBadge(c) {
   if (c.status === "closed") return badge("Encerrada", "");
-  if (c.handoff_requested && c.mode === "ai") return badge("Pediu atendente", "danger");
+  if (c.handoff_requested) return badge("Pediu atendente", "danger");
   return c.mode === "human" ? badge(`Humano${c.admin_name ? ` · ${c.admin_name.split(" ")[0]}` : ""}`, "info") : badge("IA respondendo", "brand");
 }
 
@@ -26,7 +26,7 @@ export default async function render(root, ctx) {
   }
 
   function drawList() {
-    mount(convsEl, state.items.length ? html`${state.items.map((c) => html`<button class="conv ${c.id === state.activeId ? "active" : ""} ${c.handoff_requested && c.mode === "ai" && c.status === "open" ? "urgent" : ""}" data-id="${c.id}">
+    mount(convsEl, state.items.length ? html`${state.items.map((c) => html`<button class="conv ${c.id === state.activeId ? "active" : ""} ${c.handoff_requested && c.status === "open" ? "urgent" : ""}" data-id="${c.id}">
       <span class="avatar">${initials(c.visitor_name || "V")}</span>
       <span style="min-width:0"><span class="who"><span>${c.visitor_name || "Visitante"}</span></span><span class="prev" style="display:block">${c.last_message_preview || "—"}</span><span style="display:block;margin-top:4px">${modeBadge(c)}</span></span>
       <span class="meta"><span>${ago(c.last_message_at)}</span>${c.unread_admin ? html`<span class="unread">${c.unread_admin}</span>` : ""}</span></button>`)}` : empty(state.status === "open" ? "Nenhuma conversa aberta" : "Nenhuma conversa encerrada", "Quando alguém falar com o chat do site, aparece aqui."));
@@ -61,13 +61,13 @@ export default async function render(root, ctx) {
         <span class="avatar">${initials(c.visitor_name || "V")}</span>
         <div class="who"><strong>${c.visitor_name || "Visitante"}</strong><span class="muted small">${[c.visitor_email, REGION(c)].filter(Boolean).join(" · ")}</span></div>
         ${modeBadge(c)}
-        ${closed ? "" : html`${c.mode === "ai" ? html`<button class="btn sm primary" id="takeover">Assumir conversa</button>` : html`<button class="btn sm ghost" id="release">${icon("bot")} Devolver à IA</button>`}
+        ${closed ? "" : html`${(c.mode === "ai" || c.handoff_requested) ? html`<button class="btn sm primary" id="takeover">Assumir conversa</button>` : html`<button class="btn sm ghost" id="release">${icon("bot")} Devolver à IA</button>`}
         <button class="btn sm ghost" id="lead">Criar lead</button><button class="btn sm danger" id="close">Encerrar</button>`}
         ${ctx.user.role === "admin" ? html`<button class="btn sm danger" id="delete" title="Excluir conversa" aria-label="Excluir conversa">${icon("trash")}</button>` : ""}
       </div>
       <div class="chat-body" id="body">${state.messages.map(bubbleHtml)}</div>
       ${closed ? html`<div class="composer"><div class="notice">Conversa encerrada. O histórico fica salvo.</div></div>` : html`<form class="composer" id="composer">
-        ${c.mode === "ai" ? html`<div class="notice">A IA está respondendo este visitante. Ao enviar uma mensagem, você assume a conversa e a IA para.</div>` : html`<div class="notice warn">Você está no controle — a IA está pausada nesta conversa.</div>`}
+        ${c.handoff_requested ? html`<div class="notice warn">Aguardando um administrador assumir. A IA esta pausada e o historico fica disponivel para a equipe.</div>` : c.mode === "ai" ? html`<div class="notice">A IA está respondendo este visitante. Ao enviar uma mensagem, você assume a conversa e a IA para.</div>` : html`<div class="notice warn">Você está no controle — a IA está pausada nesta conversa.</div>`}
         <div class="row"><textarea class="textarea" id="text" rows="1" maxlength="2000" placeholder="Escreva a resposta... (Enter envia, Shift+Enter quebra linha)"></textarea><button class="btn primary" type="submit" aria-label="Enviar">${icon("send")}</button></div>
       </form>`}`);
     scrollDown();
@@ -124,7 +124,7 @@ export default async function render(root, ctx) {
   async function refreshConversation(redraw = true) {
     if (!state.activeId) return;
     const data = await api(`/admin/chat/conversations/${state.activeId}`);
-    const modeChanged = !state.conv || state.conv.mode !== data.conversation.mode || state.conv.status !== data.conversation.status;
+    const modeChanged = !state.conv || state.conv.mode !== data.conversation.mode || state.conv.status !== data.conversation.status || state.conv.handoff_requested !== data.conversation.handoff_requested || state.conv.admin_name !== data.conversation.admin_name;
     state.conv = data.conversation;
     data.messages.forEach(appendMessage);
     if (modeChanged && redraw) drawPane();

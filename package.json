@@ -9,6 +9,7 @@
     "node": ">=20.12"
   },
   "scripts": {
+    "test": "node --test test/*.test.js",
     "start": "node server/index.js",
     "dev": "node --watch server/index.js",
     "dev:db": "node server/scripts/dev-db.js",

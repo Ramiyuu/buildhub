@@ -106,3 +106,7 @@ server/scripts/  seed, admin, mapa, banco local
 ## Localizacao dos acessos
 
 O acesso e permitido de qualquer pais, inclusive quando a localizacao do IP e desconhecida. A geolocalizacao continua disponivel para estatisticas. Rate limits, bloqueio temporario por abuso e protecoes de login continuam ativos. Na Railway, o IP do visitante usa X-Real-IP quando o ambiente da plataforma e detectado e TRUST_PROXY e maior que zero.
+
+## Prompt e encaminhamento comercial
+
+Consulte [ATENDIMENTO.md](ATENDIMENTO.md) para as regras, o prompt completo, as variaveis da Railway e a validacao do atendimento. Pedidos de orcamento geram encaminhamento ao administrador e pausam a IA.

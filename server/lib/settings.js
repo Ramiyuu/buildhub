@@ -3,7 +3,7 @@ const { query } = require("../db");
 const DEFAULTS = {
   chat: {
     aiEnabled: true,
-    greeting: "Olá! Sou a assistente virtual da BuildHub. Posso tirar dúvidas sobre sites, sistemas e landing pages, ou chamar um atendente. Como posso ajudar?",
+    greeting: "Olá! Sou a assistente virtual da BuildHub. O que você quer criar ou melhorar, e qual problema esse projeto precisa resolver?",
     extraPrompt: ""
   }
 };

@@ -128,7 +128,7 @@
     if (!list.querySelector("[data-id]")) list.replaceChildren();
     data.messages.forEach(addMessage);
     const lastAdmin = [...data.messages].reverse().find((m) => m.sender === "admin");
-    state.admin = lastAdmin?.author || state.admin;
+    state.admin = data.handoff ? "Aguardando equipe" : lastAdmin?.author || null;
     setStatus();
   }
 

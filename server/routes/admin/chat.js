@@ -23,7 +23,7 @@ router.get("/conversations", async (req, res) => {
             c.last_message_at, c.last_message_preview, c.created_at, c.is_demo, u.name AS admin_name
        FROM chat_conversations c LEFT JOIN users u ON u.id = c.assigned_admin_id
       WHERE ($1::text IS NULL OR c.status = $1)
-      ORDER BY (c.handoff_requested AND c.mode = 'ai') DESC, c.last_message_at DESC LIMIT 100`,
+      ORDER BY c.handoff_requested DESC, c.last_message_at DESC LIMIT 100`,
     [status]
   );
   res.json({ items: rows });

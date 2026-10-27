@@ -8,6 +8,7 @@ const { getSetting } = require("../lib/settings");
 const { visitorHash, parseUserAgent, isBot } = require("../lib/geo");
 const { limits } = require("../middleware/security");
 const config = require("../config");
+const { redactSecrets } = require("../lib/chat-safety");
 
 const router = express.Router();
 
@@ -64,7 +65,7 @@ router.post("/track", limits.track, (req, res) => {
 
 // ------------------------------------------------------------------ chat publico
 const messageSchema = z.object({
-  body: z.string().trim().min(1, "Digite uma mensagem.").max(config.chat.maxMessageLength, `Mensagem muito longa (máximo ${config.chat.maxMessageLength} caracteres).`),
+  body: z.string().trim().min(1, "Digite uma mensagem.").max(config.chat.maxMessageLength, `Mensagem muito longa (máximo ${config.chat.maxMessageLength} caracteres).`).transform(redactSecrets),
   name: z.string().trim().max(80).optional(),
   email: z.string().trim().toLowerCase().email().max(160).optional().or(z.literal("").transform(() => undefined))
 });
@@ -114,8 +115,11 @@ router.post("/chat/message", limits.chatMessage, limits.chatDaily, async (req, r
   res.status(201).json({ conversationId: conv.id, message: chat.present(message), mode: conv.mode });
 
   if (conv.mode === "ai") {
-    if (chat.HUMAN_WORDS.test(data.body)) await chat.requestHandoff(conv.id, "pediu para falar com uma pessoa");
-    chat.respondWithAi(conv.id).catch((error) => console.error("[chat]", error.message));
+    if (chat.HUMAN_WORDS.test(data.body)) {
+      await chat.requestHandoff(conv.id, "human");
+    } else {
+      chat.respondWithAi(conv.id).catch((error) => console.error("[chat]", error.message));
+    }
   }
 });
 

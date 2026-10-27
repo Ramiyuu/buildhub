@@ -3,6 +3,7 @@ const { query } = require("../db");
 const config = require("../config");
 const bus = require("./bus");
 const { generateReply } = require("./ai");
+const { redactSecrets } = require("./chat-safety");
 const { getSetting } = require("./settings");
 const { isUuid } = require("./http");
 const { ipHash, clientIp } = require("./geo");
@@ -11,8 +12,8 @@ const sha = (value) => crypto.createHash("sha256").update(value).digest("hex");
 const cookieOptions = { httpOnly: true, secure: config.isProd, sameSite: "strict", path: "/", maxAge: 7 * 24 * 60 * 60 * 1000 };
 const HUMAN_WORDS = /\b(atendente|humano|pessoa de verdade|falar com (algu[eé]m|uma pessoa|o dono|um consultor)|suporte humano)\b/i;
 
-const FALLBACK_TEXT = "Desculpe, não consegui responder agora. Já avisei um atendente da equipe, que vai continuar com você em breve.";
-const HANDOFF_TEXT = "Chamei um atendente da equipe. Ele pode entrar na conversa a qualquer momento; enquanto isso, continuo por aqui para ajudar.";
+const HANDOFF_TEXT = "Seu atendimento foi registrado para a equipe BuildHub. A IA fica pausada enquanto um administrador avalia a conversa. Ainda nao ha um prazo de resposta confirmado.";
+const QUOTE_TEXT = "Sua solicitacao de orcamento foi registrada para um administrador da BuildHub avaliar. Ele tera acesso ao historico desta conversa. A IA fica pausada; valores e prazos serao confirmados pela equipe.";
 
 // Mensagem como o visitante e o painel enxergam.
 const present = (row) => ({ id: Number(row.id), sender: row.sender, body: row.body, author: row.author || null, createdAt: row.created_at });
@@ -61,7 +62,7 @@ async function addMessage(conversationId, sender, body, { adminId = null, unread
 async function getSummary(id) {
   const { rows } = await query(
     `SELECT c.id, c.visitor_name, c.visitor_email, c.country, c.region_code, c.mode, c.status, c.handoff_requested, c.unread_admin, c.ai_replies,
-            c.last_message_at, c.last_message_preview, c.created_at, u.name AS admin_name
+            c.last_message_at, c.last_message_preview, c.created_at, c.assigned_admin_id, u.name AS admin_name
        FROM chat_conversations c LEFT JOIN users u ON u.id = c.assigned_admin_id WHERE c.id = $1`,
     [id]
   );
@@ -76,17 +77,25 @@ async function publish(conversationId, message, { toVisitor = true } = {}) {
   return summary;
 }
 
-async function requestHandoff(conversationId, reason) {
-  const { rowCount } = await query("UPDATE chat_conversations SET handoff_requested = true WHERE id = $1 AND handoff_requested = false", [conversationId]);
-  if (!rowCount) return;
-  const msg = await addMessage(conversationId, "system", HANDOFF_TEXT);
-  const summary = await publish(conversationId, msg);
-  bus.notify({
+async function requestHandoff(conversationId, reason, summary = "") {
+  const { rowCount } = await query(
+    "UPDATE chat_conversations SET handoff_requested = true, mode = 'human' WHERE id = $1 AND handoff_requested = false AND mode = 'ai' AND status = 'open'",
+    [conversationId]
+  );
+  if (!rowCount) return false;
+  const msg = await addMessage(conversationId, "system", reason === "quote" ? QUOTE_TEXT : HANDOFF_TEXT);
+  const conversation = await publish(conversationId, msg);
+  bus.emitVisitor(conversationId, "mode", { mode: "human", admin: "Aguardando equipe" });
+  bus.emitAdmins("chat:mode", { conversationId, mode: "human" });
+  const safeSummary = redactSecrets(summary).slice(0, 1800);
+  await bus.notify({
     type: "handoff",
-    title: "Cliente pediu atendimento humano",
-    body: `${summary?.visitor_name || "Visitante"}: ${reason || "pediu para falar com uma pessoa"}`,
-    link: `#/chat/${conversationId}`
+    title: reason === "quote" ? "Orcamento aguardando administrador" : "Atendimento aguardando equipe",
+    body: `${conversation?.visitor_name || "Visitante"}: ${safeSummary || reason || "atendimento humano solicitado"}`,
+    link: `#/chat/${conversationId}`,
+    data: { conversationId, reason, summary: safeSummary }
   });
+  return true;
 }
 
 const busy = new Set();
@@ -98,7 +107,7 @@ async function respondWithAi(conversationId) {
   busy.add(conversationId);
   try {
     let conv = await getSummary(conversationId);
-    if (!conv || conv.mode !== "ai" || conv.status !== "open") return;
+    if (!conv || conv.mode !== "ai" || conv.handoff_requested || conv.status !== "open") return;
     const settings = await getSetting("chat");
 
     if (!settings.aiEnabled) {
@@ -123,18 +132,19 @@ async function respondWithAi(conversationId) {
     } catch (error) {
       console.error("[chat] IA indisponivel:", error.message);
       bus.notify({ type: "ai_error", title: "A IA não conseguiu responder", body: error.message.slice(0, 180), link: `#/chat/${conversationId}` });
-      const msg = await addMessage(conversationId, "ai", FALLBACK_TEXT);
-      await publish(conversationId, msg);
       await requestHandoff(conversationId, "falha da IA");
       return;
     }
 
     conv = await getSummary(conversationId);
-    if (!conv || conv.mode !== "ai" || conv.status !== "open") return; // admin assumiu enquanto a IA pensava
-    const msg = await addMessage(conversationId, "ai", reply.text || FALLBACK_TEXT);
+    if (!conv || conv.mode !== "ai" || conv.handoff_requested || conv.status !== "open") return; // admin assumiu enquanto a IA pensava
+    if (reply.handoff) {
+      await requestHandoff(conversationId, reply.reason || "human", reply.summary);
+      return;
+    }
+    const msg = await addMessage(conversationId, "ai", reply.text);
     await query("UPDATE chat_conversations SET ai_replies = ai_replies + 1 WHERE id = $1", [conversationId]);
     await publish(conversationId, msg);
-    if (reply.handoff) await requestHandoff(conversationId, "a IA sugeriu chamar um atendente");
   } finally {
     bus.emitVisitor(conversationId, "typing", { on: false });
     busy.delete(conversationId);
