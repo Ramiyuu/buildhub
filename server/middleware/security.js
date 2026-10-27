@@ -81,40 +81,19 @@ setInterval(() => {
 const bannedCount = () => { const now = Date.now(); let n = 0; for (const until of bans.values()) if (until > now) n += 1; return n; };
 
 // ---------------------------------------------------------------- geo-bloqueio + IP do cliente
-const BLOCK_PAGE = `<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Acesso indisponível</title>
-<style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0d0920;color:#f1efff;font:16px/1.6 system-ui,sans-serif;text-align:center;padding:24px}main{max-width:420px}h1{font-size:1.4rem;margin:0 0 8px}p{margin:0;color:#bbb7d0}</style>
-<main><h1>Acesso indisponível na sua região</h1><p>Este site atende apenas acessos originados no Brasil.</p></main></html>`;
-
-function geoBlock(req, res, next) {
+function identifyClient(req, res, next) {
   if (req.path === "/health") return next();
   const ip = clientIp(req);
   req.clientIp = ip;
 
   if (isBanned(ip)) {
     res.set({ "Retry-After": "1800", "Cache-Control": "no-store" });
-    return res.status(429).type("text/plain").send("Muitas requisições. Tente novamente mais tarde.");
+    return res.status(429).type("text/plain").send("Muitas requisicoes. Tente novamente mais tarde.");
   }
 
-  // Em desenvolvimento, IP local passa. Em producao IP privado/desconhecido cai na regra GEO_UNKNOWN (fail-closed por padrao).
-  if (!config.isProd && isPrivate(ip)) {
-    req.geo = { country: "BR", region: null, city: null, dev: true };
-    return next();
-  }
-
-  const geo = isPrivate(ip) ? null : lookup(req, ip);
-  if (geo && config.allowCountries.includes(geo.country)) {
-    req.geo = geo;
-    return next();
-  }
-  if (!geo && config.geoUnknown === "allow") {
-    req.geo = { country: null, region: null, city: null };
-    return next();
-  }
-
-  events.record("geo_block", { ip, country: geo?.country || "??", path: req.path });
-  res.set({ "Cache-Control": "no-store", "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'" });
-  if (req.path.startsWith("/api/")) return res.status(403).json({ error: "Acesso disponível apenas no Brasil." });
-  return res.status(403).type("html").send(BLOCK_PAGE);
+  // A localizacao e apenas informativa; nenhum pais ou IP desconhecido e bloqueado.
+  req.geo = (!isPrivate(ip) && lookup(req, ip)) || { country: null, region: null, city: null };
+  return next();
 }
 
 // ---------------------------------------------------------------- limites de requisicao
@@ -157,4 +136,4 @@ function sameOrigin(req, res, next) {
   return res.status(403).json({ error: "Origem não permitida." });
 }
 
-module.exports = { securityHeaders, geoBlock, limits, sameOrigin, strike, isBanned, bannedCount };
+module.exports = { securityHeaders, identifyClient, limits, sameOrigin, strike, isBanned, bannedCount };

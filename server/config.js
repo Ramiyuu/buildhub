@@ -34,9 +34,8 @@ module.exports = {
   databasePoolMax: Math.max(1, Number(env.DATABASE_POOL_MAX) || 10),
   sessionSecret,
   trustProxy: Number.isFinite(Number(env.TRUST_PROXY)) && env.TRUST_PROXY !== "" ? Number(env.TRUST_PROXY) : 1,
+  trustRailway: Boolean(env.RAILWAY_PROJECT_ID && env.RAILWAY_ENVIRONMENT_ID),
   trustCloudflare: flag(env.TRUST_CLOUDFLARE),
-  allowCountries: (env.ALLOW_COUNTRIES || "BR").split(",").map((c) => c.trim().toUpperCase()).filter(Boolean),
-  geoUnknown: (env.GEO_UNKNOWN || "block").toLowerCase() === "allow" ? "allow" : "block",
   admin: {
     email: (env.ADMIN_EMAIL || "admin@buildhub.dev").trim().toLowerCase(),
     passwordHash: env.ADMIN_PASSWORD_HASH || "",

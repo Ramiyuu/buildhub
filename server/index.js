@@ -6,7 +6,7 @@ const { migrate, pool } = require("./db");
 const events = require("./lib/events");
 const { HttpError } = require("./lib/http");
 const { ensureAdmin } = require("./lib/bootstrap");
-const { securityHeaders, geoBlock, limits, sameOrigin } = require("./middleware/security");
+const { securityHeaders, identifyClient, limits, sameOrigin } = require("./middleware/security");
 const { loadSession, pageGuard } = require("./middleware/auth");
 
 const app = express();
@@ -15,10 +15,10 @@ const publicDir = path.join(__dirname, "..", "public");
 app.disable("x-powered-by");
 app.set("trust proxy", config.trustProxy > 0 ? config.trustProxy : false);
 
-// Healthcheck da Railway: sem geo-bloqueio nem banco.
+// Healthcheck da Railway: sem banco.
 app.get("/health", (req, res) => res.json({ ok: true }));
 
-app.use(geoBlock);          // 1) bloqueia quem nao esta em ALLOW_COUNTRIES (e IPs banidos) antes de qualquer trabalho
+app.use(identifyClient);    // Identifica IP e localizacao, sem restringir paises.
 app.use(securityHeaders);   // 2) CSP, HSTS, nosniff...
 app.use(limits.global);     // 3) limite global por IP
 app.use(cookieParser());
@@ -63,7 +63,7 @@ async function main() {
   if (config.seedDemo) await require("./scripts/seed-demo").seedDemoIfEmpty();
 
   const server = app.listen(config.port, () => {
-    console.log(`BuildHub no ar: http://localhost:${config.port} (${config.isProd ? "producao" : "desenvolvimento"}, paises liberados: ${config.allowCountries.join(", ")})`);
+    console.log(`BuildHub no ar: http://localhost:${config.port} (${config.isProd ? "producao" : "desenvolvimento"})`);
   });
   server.requestTimeout = 30000;
   server.headersTimeout = 20000;

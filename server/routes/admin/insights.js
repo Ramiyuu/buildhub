@@ -131,7 +131,7 @@ router.get("/security", requireAuth("admin"), async (req, res) => {
     days, byType: byType.rows, byDay: byDay.rows, blockedCountries: byCountry.rows, recent: recent.rows, sessions: sessions.rows,
     geoBlocked24h: blocked24h.rows[0].total,
     protections: {
-      allowCountries: config.allowCountries, geoUnknown: config.geoUnknown, bannedIps: bannedCount(),
+      geoBlocking: false, bannedIps: bannedCount(),
       trustProxy: config.trustProxy, cloudflare: config.trustCloudflare, production: config.isProd,
       openai: config.openai.mock ? "mock" : config.openai.key ? "configurada" : "ausente", model: config.openai.model,
       adminsOnline: bus.adminOnline()

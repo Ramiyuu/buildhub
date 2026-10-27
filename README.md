@@ -5,7 +5,7 @@ Site da BuildHub + painel administrativo + chat de atendimento com IA (OpenAI), 
 - **Site público** (`public/`): home, login/cadastro, chat flutuante com IA e contagem anônima de visitas.
 - **Painel admin** (`/admin/`): dashboard com visitas e mapa do Brasil, chat ao vivo (a IA para quando você assume), clientes, leads, projetos, tarefas, sites entregues, cobranças, financeiro, usuários, segurança e configurações da IA.
 - **Área do cliente** (`/cliente/`): projetos e cobranças da empresa vinculada ao usuário.
-- **Servidor** (`server/`): Express 5 + Postgres (`pg`), sessões em cookie httpOnly, geo-bloqueio fora do Brasil, rate limit, banimento automático e tempo real por SSE.
+- **Servidor** (`server/`): Express 5 + Postgres (`pg`), sessões em cookie httpOnly, rate limit, banimento automático e tempo real por SSE.
 
 ## Rodar no seu computador
 
@@ -31,7 +31,6 @@ O `.env` local já aponta para esse banco. Com `SEED_DEMO=true` o primeiro boot 
 | `DATABASE_URL` | `${{ Postgres.DATABASE_URL }}` (referência ao plugin) |
 | `SESSION_SECRET` | texto aleatório com 32+ caracteres (`openssl rand -hex 32`) |
 | `TRUST_PROXY` | `1` |
-| `ALLOW_COUNTRIES` | `BR` |
 | `ADMIN_EMAIL` | email do administrador |
 | `ADMIN_PASSWORD_HASH` | hash gerado por `npm run admin:create` (veja abaixo) |
 | `OPENAI_API_KEY` | sua chave da OpenAI |
@@ -69,7 +68,6 @@ Se `ADMIN_PASSWORD_HASH` não for definido, o servidor gera uma senha de 16 cara
 
 Implementado nesta aplicação:
 
-- **Geo-bloqueio**: só `ALLOW_COUNTRIES` (padrão `BR`) acessa; o resto recebe 403 antes de qualquer processamento. `/health` é exceção. IP sem país identificado é bloqueado (`GEO_UNKNOWN=allow` muda isso).
 - **Rate limit** por IP (geral, login, cadastro, chat, rastreio) e **banimento automático** de 30 min após 10 infrações em 10 min.
 - **Login**: senhas com scrypt, conta travada 15 min após 5 erros, resposta de tempo uniforme, sessão em cookie `httpOnly` + `SameSite=Strict` (+ `__Host-` e `Secure` em produção), token CSRF e checagem de origem em toda alteração.
 - **Cabeçalhos**: CSP restritiva (sem scripts inline), HSTS, nosniff, anti-clickjacking, referrer controlado.
@@ -104,3 +102,7 @@ server/lib/      senha, geo, chat, IA, SSE, eventos de segurança, auditoria
 server/migrations/  schema do Postgres
 server/scripts/  seed, admin, mapa, banco local
 ```
+
+## Localizacao dos acessos
+
+O acesso e permitido de qualquer pais, inclusive quando a localizacao do IP e desconhecida. A geolocalizacao continua disponivel para estatisticas. Rate limits, bloqueio temporario por abuso e protecoes de login continuam ativos. Na Railway, o IP do visitante usa X-Real-IP quando o ambiente da plataforma e detectado e TRUST_PROXY e maior que zero.

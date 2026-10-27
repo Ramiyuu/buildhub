@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const { isIP } = require("net");
 const geoip = require("geoip-lite");
 const config = require("../config");
 
@@ -19,7 +20,13 @@ function normalizeIp(ip) {
 function clientIp(req) {
   if (config.trustCloudflare) {
     const cf = req.headers["cf-connecting-ip"];
-    if (typeof cf === "string" && cf.length < 64) return normalizeIp(cf);
+    if (typeof cf === "string" && isIP(normalizeIp(cf))) return normalizeIp(cf);
+  }
+  // O ingress HTTP da Railway fornece o IP do visitante em X-Real-IP.
+  // Fora da Railway (ou sem confianca no proxy), ignore esse cabecalho.
+  if (config.trustRailway && config.trustProxy > 0) {
+    const real = req.headers["x-real-ip"];
+    if (typeof real === "string" && isIP(normalizeIp(real))) return normalizeIp(real);
   }
   return normalizeIp(req.ip || req.socket?.remoteAddress);
 }

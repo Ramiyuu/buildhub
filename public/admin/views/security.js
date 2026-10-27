@@ -42,12 +42,12 @@ export default async function render(root, ctx) {
 
       <div class="grid grid-main">
         <div class="card"><div class="card-head"><div><h2>Bloqueios por dia</h2><p>O que a aplicação barrou antes de chegar ao sistema</p></div></div><div id="chart"></div><div class="legend"><span><i style="background:${COLORS.danger}"></i>País não permitido</span><span><i style="background:${COLORS.warn}"></i>Limite de requisições</span><span><i style="background:${COLORS.info}"></i>Logins falhos</span></div></div>
-        <div class="card"><div class="card-head"><div><h2>Países bloqueados</h2><p>Origem das tentativas fora do Brasil</p></div></div>${s.blockedCountries.length ? hbars(s.blockedCountries.map((c) => ({ label: `${COUNTRY[c.country] || c.country} (${c.country})`, value: c.total })), { color: COLORS.danger }) : html`<div class="empty">Nenhum bloqueio no período.</div>`}</div>
+        <div class="card"><div class="card-head"><div><h2>Países bloqueados</h2><p>Histórico anterior à liberação regional</p></div></div>${s.blockedCountries.length ? hbars(s.blockedCountries.map((c) => ({ label: `${COUNTRY[c.country] || c.country} (${c.country})`, value: c.total })), { color: COLORS.danger }) : html`<div class="empty">Nenhum bloqueio no período.</div>`}</div>
       </div>
 
       <div class="grid grid-2">
         <div class="card"><div class="card-head"><div><h2>Proteções ativas</h2><p>Camadas de defesa desta aplicação</p></div></div><ul class="protection-list">
-          <li>${icon("check")}<span><b>Bloqueio por país:</b> só ${p.allowCountries.join(", ")} acessa. IP sem país identificado: ${p.geoUnknown === "block" ? "bloqueado" : "liberado"}.</span></li>
+          <li>${icon("globe")}<span><b>Acesso por região:</b> liberado para todos os países, inclusive IPs sem localização identificada.</span></li>
           <li>${icon("check")}<span><b>Limite de requisições</b> por IP (geral, login, cadastro, chat e rastreio) com resposta 429.</span></li>
           <li>${icon("check")}<span><b>Banimento automático</b> de 30 min após 10 infrações em 10 min.</span></li>
           <li>${icon("check")}<span><b>Senhas com scrypt</b>, bloqueio da conta por 15 min após 5 erros e tempo de resposta uniforme.</span></li>
