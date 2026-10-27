@@ -1,0 +1,351 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="BuildHub - desenvolvimento de sites, sistemas web, landing pages e expêriencias digitais premium.">
+  <title>BuildHub | Tecnologia para marcas que constroem o futuro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="chat-widget.css">
+  <script src="theme-boot.js"></script>
+</head>
+<body>
+  <div class="loader" id="loader" aria-label="Carregando site">
+    <span class="brand-symbol"><img src="assets/images/logobranca.png" alt="" aria-hidden="true"><span class="brand-fallback">BH</span></span>
+    <div class="loader-line"></div>
+  </div>
+
+  <canvas id="particleCanvas" aria-hidden="true"></canvas>
+  <div class="floating-grid" id="floatingGrid" aria-hidden="true"></div>
+
+  <header class="site-header" id="siteHeader">
+    <div class="header-pill">
+      <button class="nav-toggle" id="navToggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="navMenu">
+        <svg class="icon-menu" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        <svg class="icon-close" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+
+      <nav class="nav-menu" id="navMenu" aria-label="Navegação principal">
+        <a href="#home">Home</a>
+        <a href="#quem-somos">Quem somos</a>
+        <a href="#servicos">Serviços</a>
+        <a href="#processo">Processo</a>
+        <a href="#portfolio">Portfólio</a>
+      </nav>
+
+      <a class="brand" href="#home" aria-label="BuildHub, início">
+        <span class="brand-symbol"><img src="assets/images/logobranca.png" alt="" aria-hidden="true"><span class="brand-fallback">BH</span></span>
+        <span class="brand-text">BuildHub</span>
+      </a>
+
+      <div class="header-actions">
+        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Ativar tema escuro" title="Ativar tema escuro">
+          <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        </button>
+        <a href="login.html" class="header-cta" aria-label="Login">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+          <span>Login</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero section" id="home">
+      <div class="hero-content">
+        <p class="eyebrow" data-intro style="--i: 0">BuildHub</p>
+        <h1 data-intro style="--i: 1">Construir para expandir no digital</h1>
+        <p class="hero-copy" data-intro style="--i: 2">Cada projeto começa com uma conversa. Ouvimos suas ideias, analisamos suas necessidades e desenvolvemos uma solução digital que reflita exatamente o que você imaginou.</p>
+        <div class="hero-actions" data-intro style="--i: 3">
+          <a href="login.html" class="btn btn-primary magnetic">Falar com a BuildHub</a>
+          <a href="#portfolio" class="btn btn-ghost magnetic">Ver projetos</a>
+        </div>
+      </div>
+
+      <div class="hero-orbit" id="heroOrbit" data-intro style="--i: 2">
+        <div class="dash-stage" id="dashStage">
+          <div class="dash" role="group" aria-label="Prévia de um dashboard BuildHub com dados fictícios">
+            <div class="dash-bar">
+              <span class="dash-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              <span class="dash-url"><svg viewBox="0 0 24 24" aria-hidden="true"><rect width="14" height="10" x="5" y="11" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg> painel.buildhub.dev</span>
+              <span class="dash-avatar" aria-hidden="true">BH</span>
+            </div>
+
+            <div class="dash-body">
+              <nav class="dash-rail" aria-hidden="true">
+                <span class="is-active"><svg viewBox="0 0 24 24" aria-hidden="true"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg></span>
+                <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></span>
+                <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+                <span><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg></span>
+              </nav>
+
+              <div class="dash-main">
+                <div class="dash-head">
+                  <div>
+                    <p class="dash-title">Visão geral</p>
+                    <p class="dash-sub">Loja GameBear &middot; dados fictícios</p>
+                  </div>
+                  <div class="dash-range" role="group" aria-label="Período">
+                    <button type="button" class="is-active" data-range="7d" aria-pressed="true">7d</button>
+                    <button type="button" data-range="30d" aria-pressed="false">30d</button>
+                    <button type="button" data-range="12m" aria-pressed="false">12m</button>
+                  </div>
+                </div>
+
+                <div class="dash-kpis">
+                  <button type="button" class="dash-kpi is-active" data-metric="visits" aria-pressed="true">
+                    <span class="dash-kpi__label">Visitas</span>
+                    <strong class="dash-kpi__value">0</strong>
+                    <span class="dash-kpi__delta"></span>
+                  </button>
+                  <button type="button" class="dash-kpi" data-metric="conv" aria-pressed="false">
+                    <span class="dash-kpi__label">Conversão</span>
+                    <strong class="dash-kpi__value">0</strong>
+                    <span class="dash-kpi__delta"></span>
+                  </button>
+                  <button type="button" class="dash-kpi" data-metric="revenue" aria-pressed="false">
+                    <span class="dash-kpi__label">Receita</span>
+                    <strong class="dash-kpi__value">0</strong>
+                    <span class="dash-kpi__delta"></span>
+                  </button>
+                </div>
+
+                <div class="dash-chart" id="dashChart" tabindex="0" aria-label="Gráfico de linha. Use as setas para ver cada ponto.">
+                  <svg viewBox="0 0 400 150" aria-hidden="true">
+                    <defs>
+                      <linearGradient id="dashArea" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0" stop-color="#5d46ff" stop-opacity="0.35"/>
+                        <stop offset="1" stop-color="#5d46ff" stop-opacity="0"/>
+                      </linearGradient>
+                    </defs>
+                    <g class="dash-grid"><path d="M8 18H392M8 68H392M8 118H392"/></g>
+                    <path class="dash-area" d="" fill="url(#dashArea)"/>
+                    <path class="dash-line" d="" pathLength="1"/>
+                    <g class="dash-labels"></g>
+                    <g class="dash-hover" opacity="0">
+                      <path class="dash-hover__line" d="M0 12V120"/>
+                      <circle class="dash-hover__dot" r="4.5"/>
+                    </g>
+                  </svg>
+                  <div class="dash-tip" role="status"><span></span><strong></strong></div>
+                </div>
+
+                <ul class="dash-projects" aria-label="Projetos em andamento">
+                  <li>
+                    <span class="dash-proj__ico">GB</span>
+                    <span class="dash-proj__name">Loja GameBear<small>E-commerce &middot; em testes</small></span>
+                    <span class="dash-proj__bar"><i style="--p: 92%"></i></span>
+                    <span class="dash-proj__pct">92%</span>
+                  </li>
+                  <li>
+                    <span class="dash-proj__ico">SC</span>
+                    <span class="dash-proj__name">Painel SafeCore<small>Sistema &middot; desenvolvimento</small></span>
+                    <span class="dash-proj__bar"><i style="--p: 68%"></i></span>
+                    <span class="dash-proj__pct">68%</span>
+                  </li>
+                  <li>
+                    <span class="dash-proj__ico">SW</span>
+                    <span class="dash-proj__name">Shield Woman<small>Landing page &middot; entregue</small></span>
+                    <span class="dash-proj__bar"><i style="--p: 100%"></i></span>
+                    <span class="dash-proj__pct">100%</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div class="dash-glare" aria-hidden="true"></div>
+          </div>
+
+          <div class="dash-chip dash-chip--deploy" aria-hidden="true">
+            <span class="dash-chip__ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg></span>
+            <span><strong>Deploy concluído</strong><small>há 2 min &middot; produção</small></span>
+          </div>
+          <div class="dash-chip dash-chip--uptime" aria-hidden="true">
+            <span class="dash-live"></span>
+            <span><strong>99,98%</strong><small>uptime em 30 dias</small></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="service-lines" data-lines>
+        <article class="service-line" style="--i: 0">
+          <span class="service-line__node" aria-hidden="true"></span>
+          <span class="service-line__num">01</span>
+          <h3>Desenvolvimento Web</h3>
+          <p>Sites rápidos, responsivos e pensados para conversão.</p>
+        </article>
+        <article class="service-line" style="--i: 1">
+          <span class="service-line__node" aria-hidden="true"></span>
+          <span class="service-line__num">02</span>
+          <h3>Sistemas</h3>
+          <p>Painéis e automações que organizam processos digitais.</p>
+        </article>
+        <article class="service-line" style="--i: 2">
+          <span class="service-line__node" aria-hidden="true"></span>
+          <span class="service-line__num">03</span>
+          <h3>Landing Pages</h3>
+          <p>Páginas focadas em campanhas, leads e lançamentos.</p>
+        </article>
+        <article class="service-line" style="--i: 3">
+          <span class="service-line__node" aria-hidden="true"></span>
+          <span class="service-line__num">04</span>
+          <h3>UI/UX Design</h3>
+          <p>Interfaces elegantes, claras e preparadas para escala.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section about" id="quem-somos">
+      <div class="section-heading reveal">
+        <p class="eyebrow">Quem somos?</p>
+        <h2>Uma empresa criada para unir engenharia, design e crescimento.</h2>
+        <p>A BuildHub nasceu para atender empresas que precisam de presença digital com acabamento premium e base técnica sólida.</p>
+      </div>
+
+      <div class="about-grid">
+        <article class="about-story glass reveal">
+          <h3>História da BuildHub</h3>
+          <p>Fundada por estudantes do ensino médio, a BuildHub atua como uma ponte entre a ambição de marcas modernas e a execução técnica necessária para lançar experiências confiáveis.</p>
+          <p>Cada projeto passa por descoberta, arquitetura, design, desenvolvimento e acompanhamento, mantendo clareza em cada etapa.</p>
+        </article>
+
+        <div class="values">
+          <article class="value-card reveal">
+            <span>Missão</span>
+            <p>Construir plataformas digitais que aceleram negócios e tornam tecnologia mais acessível.</p>
+          </article>
+          <article class="value-card reveal">
+            <span>Visão</span>
+            <p>Ser referencia em experiências web elegantes, escaláveis e orientadas a resultado.</p>
+          </article>
+          <article class="value-card reveal">
+            <span>Valores</span>
+            <p>Clareza, performance, parceria, qualidade visual e responsabilidade técnica.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section portfolio" id="portfolio">
+      <div class="section-heading reveal">
+        <p class="eyebrow">Portfólio</p>
+        <h2>Projetos demonstrativos com identidade própria.</h2>
+        <p>Três conceitos fictícios criados para demonstrar como a BuildHub adapta estratégia, interface e tecnologia para segmentos diferentes.</p>
+      </div>
+
+      <div class="filter-bar reveal" role="list" aria-label="Categorias de portfolio">
+        <button class="filter-btn active" data-filter="all" type="button">Todos</button>
+        <button class="filter-btn" data-filter="games" type="button">Games</button>
+        <button class="filter-btn" data-filter="security" type="button">Tecnologia</button>
+        <button class="filter-btn" data-filter="store" type="button">E-commerce</button>
+      </div>
+
+      <div class="project-grid premium-project-grid" id="projectGrid"></div>
+    </section>
+
+    <section class="section process-section" id="processo">
+      <div class="section-heading reveal">
+        <p class="eyebrow">Como trabalhamos?</p>
+        <h2>Processo claro do primeiro briefing a entrega.</h2>
+        <p>Da conversa inicial ao suporte, cada etapa existe para reduzir ruído, alinhar expectativas e transformar necessidades reais em produto digital.</p>
+      </div>
+      <div class="service-lines service-lines--5" data-lines>
+        <article class="service-line" style="--i: 0">
+          <span class="service-line__node" aria-hidden="true"></span>
+          <span class="service-line__num">01</span>
+          <h3>Levantamento</h3>
+          <p>Compreendemos objetivos, rotina, público e desafios do cliente para orientar a solução.</p>
+        </article>
+        <article class="service-line" style="--i: 1">
+          <span class="service-line__node" aria-hidden="true"></span>
+          <span class="service-line__num">02</span>
+          <h3>Planejamento</h3>
+          <p>Definimos estrutura, funcionalidades, prioridades e organização das informações.</p>
+        </article>
+        <article class="service-line" style="--i: 2">
+          <span class="service-line__node" aria-hidden="true"></span>
+          <span class="service-line__num">03</span>
+          <h3>Desenvolvimento</h3>
+          <p>Construímos interfaces responsivas com foco em usabilidade, desempenho e experiência.</p>
+        </article>
+        <article class="service-line" style="--i: 3">
+          <span class="service-line__node" aria-hidden="true"></span>
+          <span class="service-line__num">04</span>
+          <h3>Testes</h3>
+          <p>Validamos fluxos, telas, formulários e detalhes responsivos antes da entrega final.</p>
+        </article>
+        <article class="service-line" style="--i: 4">
+          <span class="service-line__node" aria-hidden="true"></span>
+          <span class="service-line__num">05</span>
+          <h3>Entrega e suporte</h3>
+          <p>Disponibilizamos a versão final e acompanhamos ajustes iniciais para garantir estabilidade.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section insights-section" id="servicos">
+      <div class="insights-grid">
+        <article class="content-card glass reveal">
+          <p class="eyebrow">Tecnologias utilizadas</p>
+          <h2>Base moderna para sites e sistemas rápidos.</h2>
+          <ul class="feature-list">
+            <li>HTML, CSS e JavaScript</li>
+            <li>LocalStorage para simulações de painel e login</li>
+            <li>Boas práticas de performance, acessibilidade e SEO técnico</li>
+          </ul>
+        </article>
+        <article class="content-card glass reveal">
+          <p class="eyebrow">Benefícios</p>
+          <h2>Mais clareza, eficiência e controle no projeto.</h2>
+          <ul class="feature-list">
+            <li>Processo transparente e organizado</li>
+            <li>Redução de retrabalho e erros de comunicação</li>
+            <li>Experiência visual profissional em todos os dispositivos</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="section testimonials-section">
+      <div class="section-heading reveal">
+        <p class="eyebrow">Depoimentos</p>
+        <h2>Experiências que guiam nosso padrão de entrega.</h2>
+      </div>
+      <div class="testimonials-grid-main reveal">
+        <article><p>"O atendimento foi rápido e a solução ficou exatamente como precisávamos."</p><strong>Mariana Souza</strong></article>
+        <article><p>"Hoje temos mais organização, menos erros e relatórios mais claros."</p><strong>Carlos Mendes</strong></article>
+        <article><p>"A BuildHub traduziu nossa ideia em uma presença digital muito mais profissional."</p><strong>Fernanda Lima</strong></article>
+      </div>
+    </section>
+
+  <footer class="footer">
+    <p>BuildHub - construindo soluções para o futuro.</p>
+    <ul class="footer-contact-list" aria-label="Informações de contato">
+      <li><a class="footer-contact-link" href="https://www.instagram.com/buildhub_" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><rect width="20" height="20" x="2" y="2" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01"/></svg> @buildhub_</a></li>
+      <li><span class="footer-contact-item"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg> Rio de Janeiro, Brasil</span></li>
+      <li><a class="footer-contact-link" href="mailto:buildhub2426@gmail.com"><svg viewBox="0 0 24 24" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg> buildhub2426@gmail.com</a></li>
+      <!-- TODO: preencher número completo do telefone. -->
+      <li><span class="footer-contact-item"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg> (21) xxxxx-xxxx</span></li>
+    </ul>
+  </footer>
+
+  <div class="project-modal" id="projectModal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal-backdrop" data-close-modal></div>
+    <article class="modal-card glass">
+      <button class="modal-close" type="button" data-close-modal aria-label="Fechar modal">x</button>
+      <div id="modalContent"></div>
+    </article>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <button class="to-top" id="toTop" type="button" aria-label="Voltar ao topo">^</button>
+
+  <script src="script.js"></script>
+  <script src="js/chat-widget.js" defer></script>
+  <script src="js/track.js" defer></script>
+</body>
+</html>

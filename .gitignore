@@ -1,0 +1,9 @@
+node_modules/
+.env
+.env.*
+!.env.example
+.dev-pg/
+*.local.txt
+ADMIN-CREDENTIALS.local.txt
+npm-debug.log*
+.claude/
